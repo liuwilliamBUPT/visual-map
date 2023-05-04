@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CN from "../assets/100000_full.json";
-import { onMounted } from "vue";
+import World from "../assets/World_cn.json";
+import { onMounted, ref, watch } from "vue";
 import * as echarts from "echarts/core";
 import {
   TitleComponent,
@@ -16,6 +17,8 @@ import {
 } from "echarts/components";
 import { MapChart, MapSeriesOption } from "echarts/charts";
 import { CanvasRenderer } from "echarts/renderers";
+
+const props = defineProps<{ msg: number }>();
 
 echarts.use([
   TitleComponent,
@@ -36,15 +39,29 @@ type EChartsOption = echarts.ComposeOption<
   | MapSeriesOption
 >;
 
+watch(
+  () => props.msg,
+  (e) => {
+    console.log(e);
+    myChart.setOption({series: [{
+      map: e === 1 ? "CN" : "World",
+    }]
+
+    });
+  }
+);
+
+let chartRef = ref<HTMLElement | null>(null);
+let myChart: echarts.ECharts;
 onMounted(() => {
-  let chartDom = document.getElementById("main")!;
-  let myChart = echarts.init(chartDom);
+  myChart = echarts.init(chartRef.value!);
   let option: EChartsOption;
 
   myChart.showLoading();
 
   myChart.hideLoading();
   echarts.registerMap("CN", CN as any, {});
+  echarts.registerMap("World", World as any, {});
 
   option = {
     title: {
@@ -102,17 +119,17 @@ onMounted(() => {
             show: true,
           },
         },
-        data: [{ name: "北京市", value: 4822023 }],
+        // data: [{ name: "北京市", value: 4822023 }],
       },
     ],
   };
 
   myChart.setOption(option);
-})
+});
 </script>
 
 <template>
-  <div id="main"></div>
+  <div id="main" ref="chartRef"></div>
 </template>
 
 <style scoped>
