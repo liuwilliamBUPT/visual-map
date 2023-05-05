@@ -43,11 +43,14 @@ watch(
   () => props.msg,
   (e) => {
     console.log(e);
-    myChart.setOption({series: [{
-      map: e === 1 ? "CN" : "World",
-    }]
-
+    myChart.setOption({
+      series: [
+        {
+          map: e === 1 ? "CN" : "World",
+        },
+      ],
     });
+    debugger;
   }
 );
 
@@ -111,6 +114,14 @@ onMounted(() => {
     series: [
       {
         name: "USA PopEstimates",
+        label: {
+          show: true,
+          formatter: (params) => {
+            console.log(params);
+            let data = (params.data as { name: string; value: number }) ?? { name: "" };
+            return data.name;
+          },
+        },
         type: "map",
         roam: true,
         map: "CN",
@@ -119,7 +130,13 @@ onMounted(() => {
             show: true,
           },
         },
-        // data: [{ name: "北京市", value: 4822023 }],
+        data: [
+          { name: "北京市", value: 4822023 },
+          {
+            name: "四川省",
+            value: 999,
+          },
+        ],
       },
     ],
   };
